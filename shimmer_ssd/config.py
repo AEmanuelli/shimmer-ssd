@@ -362,7 +362,9 @@ class ShimmerConfigInfo(BaseModel):
 class Config(ParsedModel):
     seed: int = 0  # training seed
     ood_seed: int | None = None  # Out of distribution seed
-    default_root_dir: Path  # Path where to save and load logs and checkpoints
+    default_root_dir: Path = (
+        Path("./checkpoints")  # Path where to save and load logs and checkpoints
+    )
     # Dataset information
     dataset: Dataset
     # Training config
