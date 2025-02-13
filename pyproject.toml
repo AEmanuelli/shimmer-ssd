@@ -26,7 +26,7 @@ dependencies = [
     "numpy (>=1.26,<2.0)",
     "torch (>=2.0.1,<3.0.0)",
     "shimmer @ git+https://github.com/ruflab/shimmer.git@main",
-    "simple-shapes-dataset @ git+https://github.com/ruflab/simple-shapes-dataset.git@main",
+    "simple-shapes-dataset @ git+https://github.com/AEmanuelli/simple-shapes-dataset.git@main",
     "wandb (>=0.18.3,<1.0.0)",
     "lightning (>=2.1.0,<3.0.0)",
     "pydantic (>=2.6.0,<3.0.0)",
