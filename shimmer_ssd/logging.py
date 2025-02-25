@@ -113,6 +113,9 @@ class LogSamplesCallback(Generic[_T], ABC, pl.Callback):
 
         samples = self.to(self.reference_samples, pl_module.device)
 
+        # Tronquer la modalité "attr" à 8 dimensions
+                  
+
         with torch.no_grad():
             pl_module.eval()
             generated_samples = pl_module(samples)
@@ -565,7 +568,7 @@ class LogGWImagesCallback(pl.Callback):
         assert isinstance(pl_module, GlobalWorkspaceBase)
         device = trainer.strategy.root_device
         self.reference_samples = self.to(self.reference_samples, device)
-
+        
         for domain_names, domains in self.reference_samples.items():
             for domain_name, domain_tensor in domains.items():
                 for logger in trainer.loggers:
@@ -582,12 +585,41 @@ class LogGWImagesCallback(pl.Callback):
         loggers: Sequence[Logger],
         pl_module: GlobalWorkspaceBase,
     ) -> None:
-        if not (len(loggers)):
-            return
 
         with torch.no_grad():
+            # Encode domains from reference samples
             latent_groups = pl_module.encode_domains(self.reference_samples)
-            predictions = cast(GWPredictionsBase, pl_module(latent_groups))
+            latent_groups_copy = latent_groups.copy()
+            # Get the tensor first, then apply slicing operations
+            attr_set = frozenset({'attr'})
+
+            if attr_set in latent_groups:
+                attr_tensor = latent_groups[attr_set]['attr']
+                print(f"Type of attr_tensor: {type(attr_tensor)}")
+                # print(f"attr_tensor: {attr_tensor}")
+                print(f"Shape of attr_tensor: {attr_tensor.shape}")
+        
+                # Now slice the tensor and concatenate
+                modified_attr = torch.cat(
+                    [attr_tensor[..., :-4], attr_tensor[..., -1:]], 
+                    dim=-1
+                )
+                
+                totkey = frozenset({'v_latents', 'attr'}) 
+                # Store the modified tensor back
+                latent_groups_copy[attr_set]['attr'] = modified_attr
+                latent_groups_copy[totkey]["attr"] = modified_attr
+                print(f"Shape of modified latentgroupsattrset: {latent_groups[attr_set]['attr'].shape}")
+            
+            
+            
+            print(latent_groups[totkey].keys()) 
+            print(latent_groups[totkey]["attr"].shape)
+
+
+            predictions = cast(GWPredictionsBase, pl_module(latent_groups_copy))
+
+            
 
             for logger in loggers:
                 for domains, preds in predictions["broadcasts"].items():
@@ -596,10 +628,19 @@ class LogGWImagesCallback(pl.Callback):
                         log_name = f"pred_trans_{domain_from}_to_{domain}"
                         if self.filter is not None and log_name not in self.filter:
                             continue
+                        samples = pl_module.decode_domain(pred, domain)
+                        if domain == "attr":
+                            device = pl_module.device
+                            samples[1] = torch.cat(
+                                [samples[1][..., :-1], 
+                                 torch.tensor([1, 0, 0], device=device).expand(32, 3), 
+                                 samples[1][..., -1:]], dim=-1
+                            )
+                            print(f"Shape of samples[1]: {samples[1].shape}")
                         self.log_samples(
                             logger,
                             pl_module,
-                            pl_module.decode_domain(pred, domain),
+                            samples,
                             domain,
                             log_name,
                         )
@@ -609,10 +650,19 @@ class LogGWImagesCallback(pl.Callback):
                         log_name = f"pred_cycle_{domain_from}_to_{domain}"
                         if self.filter is not None and log_name not in self.filter:
                             continue
+                        samples = pl_module.decode_domain(pred, domain)
+                        if domain == "attr":
+                            device = pl_module.device
+                            samples[1] = torch.cat(
+                                [samples[1][..., :-1], 
+                                 torch.tensor([1, 0, 0], device=device).expand(32, 3), 
+                                 samples[1][..., -1:]], dim=-1
+                            )
+                            print(f"Shape of samples[1]: {samples[1].shape}")
                         self.log_samples(
                             logger,
                             pl_module,
-                            pl_module.decode_domain(pred, domain),
+                            samples,
                             domain,
                             log_name,
                         )

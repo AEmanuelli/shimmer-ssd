@@ -315,7 +315,7 @@ class AttributeWithUnpairedDomainModule(DomainModule):
 
 
 class AttributeLegacyDomainModule(DomainModule):
-    latent_dim = 11
+    latent_dim = 8
 
     def __init__(self):
         super().__init__(self.latent_dim)
@@ -324,8 +324,8 @@ class AttributeLegacyDomainModule(DomainModule):
     def compute_loss(
         self, pred: torch.Tensor, target: torch.Tensor, raw_target: Any
     ) -> LossOutput:
-        pred_cat, pred_attr, _ = self.decode(pred)
-        target_cat, target_attr, _ = self.decode(target)
+        pred_cat, pred_attr = self.decode(pred)
+        target_cat, target_attr = self.decode(target)
 
         loss_attr = F.mse_loss(pred_attr, target_attr, reduction="mean")
         loss_cat = F.nll_loss(pred_cat, torch.argmax(target_cat, 1))
@@ -334,8 +334,10 @@ class AttributeLegacyDomainModule(DomainModule):
         return LossOutput(loss, metrics={"loss_attr": loss_attr, "loss_cat": loss_cat})
 
     def encode(self, x: Sequence[torch.Tensor]) -> torch.Tensor:
-        assert len(x) == 2, "This must have only 2 items."
+        # print("Flag 0 : Before encoding attribute legacy_module")
+        assert len(x) <= 3, f"This must have only 2 items, got {len(x)}"
         return torch.cat(list(x), dim=-1)
+        # print("Flag 1 : after encoding in the attribute module")
 
     def decode(self, z: torch.Tensor) -> list:
         categories = z[:, :3]
