@@ -314,6 +314,7 @@ class AttributeWithUnpairedDomainModule(DomainModule):
         )
 
 
+
 class AttributeLegacyDomainModule(DomainModule):
     latent_dim = 8
 
@@ -326,9 +327,8 @@ class AttributeLegacyDomainModule(DomainModule):
     ) -> LossOutput:
         pred_cat, pred_attr = self.decode(pred)
         target_cat, target_attr = self.decode(target)
-
         loss_attr = F.mse_loss(pred_attr, target_attr, reduction="mean")
-        loss_cat = F.nll_loss(pred_cat, torch.argmax(target_cat, 1))
+        loss_cat = F.cross_entropy(pred_cat, torch.argmax(target_cat, 1))
         loss = loss_attr + loss_cat
 
         return LossOutput(loss, metrics={"loss_attr": loss_attr, "loss_cat": loss_cat})
@@ -346,3 +346,7 @@ class AttributeLegacyDomainModule(DomainModule):
 
     def forward(self, x: Sequence[torch.Tensor]) -> list[torch.Tensor]:  # type: ignore
         return self.decode(self.encode(x))
+
+
+
+
