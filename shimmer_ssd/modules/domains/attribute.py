@@ -318,9 +318,11 @@ class AttributeWithUnpairedDomainModule(DomainModule):
 class AttributeLegacyDomainModule(DomainModule):
     latent_dim = 8
 
-    def __init__(self):
+    def __init__(self, alpha: float, temperature: float = 1):
         super().__init__(self.latent_dim)
         self.save_hyperparameters()
+        self.alpha = alpha
+        self.temperature = temperature
 
     def compute_loss(
         self, pred: torch.Tensor, target: torch.Tensor, raw_target: Any
@@ -328,8 +330,8 @@ class AttributeLegacyDomainModule(DomainModule):
         pred_cat, pred_attr = self.decode(pred)
         target_cat, target_attr = self.decode(target)
         loss_attr = F.mse_loss(pred_attr, target_attr, reduction="mean")
-        loss_cat = F.cross_entropy(pred_cat, torch.argmax(target_cat, 1))
-        loss = loss_attr + loss_cat
+        loss_cat = F.cross_entropy(pred_cat/self.temperature, torch.argmax(target_cat, 1))
+        loss = loss_attr + self.alpha*loss_cat
 
         return LossOutput(loss, metrics={"loss_attr": loss_attr, "loss_cat": loss_cat})
 
