@@ -318,7 +318,7 @@ class AttributeWithUnpairedDomainModule(DomainModule):
 class AttributeLegacyDomainModule(DomainModule):
     latent_dim = 8
 
-    def __init__(self, alpha: float, temperature: float = 1):
+    def __init__(self):
         super().__init__(self.latent_dim)
         self.save_hyperparameters()
         self.alpha = alpha
@@ -349,6 +349,7 @@ class AttributeLegacyDomainModule(DomainModule):
     def forward(self, x: Sequence[torch.Tensor]) -> list[torch.Tensor]:  # type: ignore
         return self.decode(self.encode(x))
 
-
-
-
+    def load_hyperparameters(self, alpha, temperature):
+        self.alpha = alpha
+        self.temperature = temperature
+        return self
