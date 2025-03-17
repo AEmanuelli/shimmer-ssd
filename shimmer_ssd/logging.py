@@ -595,9 +595,9 @@ class LogGWImagesCallback(pl.Callback):
 
             if attr_set in latent_groups:
                 attr_tensor = latent_groups[attr_set]['attr']
-                print(f"Type of attr_tensor: {type(attr_tensor)}")
+                # print(f"Type of attr_tensor: {type(attr_tensor)}")
                 # print(f"attr_tensor: {attr_tensor}")
-                print(f"Shape of attr_tensor: {attr_tensor.shape}")
+                # print(f"Shape of attr_tensor: {attr_tensor.shape}")
         
                 # Now slice the tensor and concatenate
                 modified_attr = torch.cat(
@@ -609,7 +609,7 @@ class LogGWImagesCallback(pl.Callback):
                 # Store the modified tensor back
                 latent_groups_copy[attr_set]['attr'] = modified_attr
                 latent_groups_copy[totkey]["attr"] = modified_attr
-                print(f"Shape of modified latentgroupsattrset: {latent_groups[attr_set]['attr'].shape}")
+                # print(f"Shape of modified latentgroupsattrset: {latent_groups[attr_set]['attr'].shape}")
             
             
             
