@@ -596,7 +596,7 @@ class LogGWImagesCallback(pl.Callback):
             if attr_set in latent_groups:
                 attr_tensor = latent_groups[attr_set]['attr']
                 # print(f"Type of attr_tensor: {type(attr_tensor)}")
-                # print(f"attr_tensor: {attr_tensor}")
+                print(f"attr_tensor: {attr_tensor}")
                 # print(f"Shape of attr_tensor: {attr_tensor.shape}")
         
                 # Now slice the tensor and concatenate
@@ -613,8 +613,8 @@ class LogGWImagesCallback(pl.Callback):
             
             
             
-            # print(latent_groups[totkey].keys()) 
-            # print(latent_groups[totkey]["attr"].shape)
+            print(latent_groups[totkey].keys()) 
+            print(latent_groups[totkey]["attr"].shape)
 
 
             predictions = cast(GWPredictionsBase, pl_module(latent_groups_copy))
