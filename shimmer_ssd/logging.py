@@ -613,8 +613,8 @@ class LogGWImagesCallback(pl.Callback):
             
             
             
-            print(latent_groups[totkey].keys()) 
-            print(latent_groups[totkey]["attr"].shape)
+            # print(latent_groups[totkey].keys()) 
+            # print(latent_groups[totkey]["attr"].shape)
 
 
             predictions = cast(GWPredictionsBase, pl_module(latent_groups_copy))
