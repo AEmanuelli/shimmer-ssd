@@ -316,7 +316,7 @@ class AttributeWithUnpairedDomainModule(DomainModule):
 
 
 class AttributeLegacyDomainModule(DomainModule):
-    latent_dim = 8
+    latent_dim = 11
 
     def __init__(self):
         super().__init__(self.latent_dim)
