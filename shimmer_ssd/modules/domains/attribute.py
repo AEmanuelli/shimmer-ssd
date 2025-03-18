@@ -348,6 +348,8 @@ class AttributeLegacyDomainModule(DomainModule):
         return self.decode(self.encode(x))
 
     def load_hyperparameters(self, alpha : float = 1, temperature : float = 1):
+        if alpha==1 and temperature==1:
+            print("default alpha and temperature are loaded")
         self.alpha = alpha
         self.temperature = temperature
         return self
