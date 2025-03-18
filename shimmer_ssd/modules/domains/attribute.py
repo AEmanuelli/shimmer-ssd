@@ -347,7 +347,7 @@ class AttributeLegacyDomainModule(DomainModule):
     def forward(self, x: Sequence[torch.Tensor]) -> list[torch.Tensor]:  # type: ignore
         return self.decode(self.encode(x))
 
-    def load_hyperparameters(self, alpha, temperature):
+    def load_hyperparameters(self, alpha : float = 1, temperature : float = 1):
         self.alpha = alpha
         self.temperature = temperature
         return self
