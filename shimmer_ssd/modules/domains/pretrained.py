@@ -77,8 +77,8 @@ def load_pretrained_module(domain: LoadedDomainConfig) -> DomainModule:
             )
 
         case DomainModuleVariant.attr_legacy:
-            module = AttributeLegacyDomainModule.load_hyperparameters(
-                2,1) #alpha, temperature)
+            module = AttributeLegacyDomainModule()
+            module.load_hyperparameters(**domain.args) #alpha, temperature)
 
         case DomainModuleVariant.t:
             module = GRUTextDomainModule.load_from_checkpoint(
