@@ -321,8 +321,6 @@ class AttributeLegacyDomainModule(DomainModule):
     def __init__(self):
         super().__init__(self.latent_dim)
         self.save_hyperparameters()
-        self.alpha = alpha
-        self.temperature = temperature
 
     def compute_loss(
         self, pred: torch.Tensor, target: torch.Tensor, raw_target: Any
