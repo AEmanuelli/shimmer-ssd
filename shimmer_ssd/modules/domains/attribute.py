@@ -329,7 +329,7 @@ class AttributeLegacyDomainModule(DomainModule):
         target_cat, target_attr = self.decode(target)
         loss_attr = F.mse_loss(pred_attr, target_attr, reduction="mean")
         loss_cat = F.cross_entropy(pred_cat/self.temperature, torch.argmax(target_cat, 1))
-        loss = loss_attr + self.alpha*loss_cat
+        loss = loss_cat + self.alpha*loss_attr
 
         return LossOutput(loss, metrics={"loss_attr": loss_attr, "loss_cat": loss_cat})
 
