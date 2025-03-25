@@ -595,15 +595,10 @@ class LogGWImagesCallback(pl.Callback):
 
             if attr_set in latent_groups:
                 attr_tensor = latent_groups[attr_set]['attr']
-                # print(f"Type of attr_tensor: {type(attr_tensor)}")
-                # print(f"attr_tensor: {attr_tensor}")
-                # print(f"Shape of attr_tensor: {attr_tensor.shape}")
-        
-                # Now slice the tensor and concatenate
-                modified_attr = torch.cat(
-                    [attr_tensor[..., :-4], attr_tensor[..., -1:]], 
-                    dim=-1
-                )
+
+
+                # Remove the color_values from the tensor
+                modified_attr = attr_tensor[..., :-3]
                 
                 totkey = frozenset({'v_latents', 'attr'}) 
                 # Store the modified tensor back
@@ -613,10 +608,7 @@ class LogGWImagesCallback(pl.Callback):
             
             
             
-            # print(latent_groups[totkey].keys()) 
-            # print(latent_groups[totkey]["attr"].shape)
-
-
+            
             predictions = cast(GWPredictionsBase, pl_module(latent_groups_copy))
 
             
@@ -632,11 +624,11 @@ class LogGWImagesCallback(pl.Callback):
                         if domain == "attr":
                             device = pl_module.device
                             samples[1] = torch.cat(
-                                [samples[1][..., :-1], 
-                                 torch.tensor([1, 0, 0], device=device).expand(32, 3), 
-                                 samples[1][..., -1:]], dim=-1
+                                [samples[1], 
+                                 torch.tensor([1, 0, 0], device=device).expand(32, 3)], 
+                                dim=-1
                             )
-                            # print(f"Shape of samples[1]: {samples[1].shape}")
+                            print(f"Shape of samples[1]: {samples[1].shape}")
                         self.log_samples(
                             logger,
                             pl_module,
@@ -658,7 +650,7 @@ class LogGWImagesCallback(pl.Callback):
                                  torch.tensor([1, 0, 0], device=device).expand(32, 3), 
                                  samples[1][..., -1:]], dim=-1
                             )
-                            # print(f"Shape of samples[1]: {samples[1].shape}")
+                            print(f"Shape of samples[1]: {samples[1].shape}")
                         self.log_samples(
                             logger,
                             pl_module,
