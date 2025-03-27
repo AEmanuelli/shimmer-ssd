@@ -527,8 +527,10 @@ class LogGWImagesCallback(pl.Callback):
         filter: Sequence[str] | None = None,
         vocab: str | None = None,
         merges: str | None = None,
+        exclude_colors = False
     ) -> None:
         super().__init__()
+        self.exclude_colors = exclude_colors
         self.mode = mode
         self.reference_samples = reference_samples
         self.every_n_epochs = every_n_epochs
@@ -593,7 +595,7 @@ class LogGWImagesCallback(pl.Callback):
             # Get the tensor first, then apply slicing operations
             attr_set = frozenset({'attr'})
 
-            if attr_set in latent_groups:
+            if self.exclude_colors and attr_set in latent_groups:
                 attr_tensor = latent_groups[attr_set]['attr']
 
 
@@ -621,7 +623,7 @@ class LogGWImagesCallback(pl.Callback):
                         if self.filter is not None and log_name not in self.filter:
                             continue
                         samples = pl_module.decode_domain(pred, domain)
-                        if domain == "attr":
+                        if domain == "attr" and self.exclude_colors:
                             device = pl_module.device
                             samples[1] = torch.cat(
                                 [samples[1], 
@@ -643,7 +645,7 @@ class LogGWImagesCallback(pl.Callback):
                         if self.filter is not None and log_name not in self.filter:
                             continue
                         samples = pl_module.decode_domain(pred, domain)
-                        if domain == "attr":
+                        if domain == "attr" and self.exclude_colors:
                             device = pl_module.device
                             samples[1] = torch.cat(
                                 [samples[1][..., :-1], 
