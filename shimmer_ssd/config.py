@@ -41,6 +41,7 @@ class DomainModuleVariant(Enum):
     # This is the module used in Devillers et al. paper. There is no VAE and the
     # attributes are used directly as the unimodal latent representations
     attr_legacy = (DomainType.attr, "legacy")
+    attr_legacy_no_color = (DomainType.attr, "legacy_no_color")
     # Same as "attr" but adds an unpaired attributes (information not available in the
     # other domains).
     attr_unpaired = (DomainType.attr, "unpaired")
