@@ -77,7 +77,11 @@ def load_pretrained_module(domain: LoadedDomainConfig) -> DomainModule:
             )
 
         case DomainModuleVariant.attr_legacy:
-            module = AttributeLegacyDomainModule()
+            module = AttributeLegacyDomainModule(latent_dim=11)
+            module.load_hyperparameters(**domain.args) #alpha, temperature)
+        
+        case DomainModuleVariant.attr_legacy_no_color:
+            module = AttributeLegacyDomainModule(latent_dim=8)
             module.load_hyperparameters(**domain.args) #alpha, temperature)
 
         case DomainModuleVariant.t:
@@ -154,6 +158,14 @@ def load_pretrained_domain(
     else:
         match domain.domain_type:
             case DomainModuleVariant.attr_legacy:
+                gw_encoder = GWEncoder(
+                    module.latent_dim, encoder_hidden_dim, workspace_dim, encoder_n_layers
+                )
+                gw_decoder = GWDecoder_legacy(
+                    workspace_dim, decoder_hidden_dim, module.latent_dim, decoder_n_layers
+                )
+            
+            case DomainModuleVariant.attr_legacy_no_color:
                 gw_encoder = GWEncoder(
                     module.latent_dim, encoder_hidden_dim, workspace_dim, encoder_n_layers
                 )
