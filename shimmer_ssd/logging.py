@@ -648,9 +648,9 @@ class LogGWImagesCallback(pl.Callback):
                         if domain == "attr" and self.exclude_colors:
                             device = pl_module.device
                             samples[1] = torch.cat(
-                                [samples[1][..., :-1], 
-                                 torch.tensor([1, 0, 0], device=device).expand(32, 3), 
-                                 samples[1][..., -1:]], dim=-1
+                                [samples[1], 
+                                 torch.tensor([1, 0, 0], device=device).expand(32, 3)], 
+                                dim=-1
                             )
                             # print(f"Shape of samples[1]: {samples[1].shape}")
                         self.log_samples(
